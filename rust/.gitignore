@@ -1,5 +1,5 @@
 /target/
 **/*.rs.bk
 /.idea/
-/Cargo.lock/
-/game-of-life.iml/
+Cargo.lock
+game-of-life.iml
