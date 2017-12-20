@@ -7,4 +7,4 @@ const GameHeader = () =>
     <h1 className="App-title">Game of Life</h1>
   </header>;
 
-export default GameHeader
+export default GameHeader;

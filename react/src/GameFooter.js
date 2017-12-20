@@ -8,4 +8,4 @@ const GameFooter = () =>
     </strong>
   </footer>;
 
-export default GameFooter
+export default GameFooter;
