@@ -11,5 +11,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "jscs": "^3.0.7"
+  },
+  "jscsConfig": {
+    "preset": "airbnb",
+    "requireCurlyBraces": null,
+    "requireTrailingComma": null,
+    "validateQuoteMarks": { "mark": "'", "escape": true, "ignoreJSX": true }
   }
 }

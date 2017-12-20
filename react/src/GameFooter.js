@@ -6,6 +6,6 @@ const GameFooter = () =>
       Game of Life - a react experiment &nbsp;
       <a href="https://github.com/diegocardoso93/game-of-life" target="_blank">source</a>
     </strong>
-  </footer>
+  </footer>;
 
 export default GameFooter
