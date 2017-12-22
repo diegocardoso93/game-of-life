@@ -10,6 +10,7 @@ class Cellule extends Component {
   constructor(props) {
     super(props);
     this.state = { bgColor: 'white' };
+    this.toggleState = this.toggleState.bind(this);
   }
 
   life_state;
@@ -23,10 +24,10 @@ class Cellule extends Component {
   }
 
   is_alive() {
-    return this.life_state == LifeState.Live;
+    return this.life_state === LifeState.Live;
   }
 
-  count_live_neighbor(neighbors) {
+  static count_live_neighbor(neighbors) {
     let count_live = 0;
     for (let neighbor of neighbors) {
       if (neighbor.is_alive()) {
@@ -36,21 +37,21 @@ class Cellule extends Component {
     return count_live;
   }
 
-  is_loneliness(neighbors) {
-    return this.count_live_neighbor(neighbors)<2;
+  static is_loneliness(neighbors) {
+    return Cellule.count_live_neighbor(neighbors)<2;
   }
 
-  is_overpopulation(neighbors) {
-    return this.count_live_neighbor(neighbors)>3;
+  static is_overpopulation(neighbors) {
+    return Cellule.count_live_neighbor(neighbors)>3;
   }
 
-  revive(neighbors) {
-    return this.count_live_neighbor(neighbors)==3;
+  static revive(neighbors) {
+    return Cellule.count_live_neighbor(neighbors)===3;
   }
 
   changeState(life_state) {
     let bgColor = '';
-    if (life_state == LifeState.Live) {
+    if (life_state === LifeState.Live) {
       bgColor = 'black';
     } else {
       bgColor = 'white';
@@ -60,9 +61,17 @@ class Cellule extends Component {
     }));
   }
 
+  toggleState() {
+    if (this.is_alive()) {
+      this.changeState(LifeState.Dead);
+    } else {
+      this.changeState(LifeState.Live);
+    }
+  }
+
   render() {
     return (
-      <div className="Game-cellule" style={{backgroundColor: this.state.bgColor}}> </div>
+      <div className="Game-cellule" style={{backgroundColor: this.state.bgColor}} onClick={this.toggleState}> </div>
     )
   }
 
@@ -111,11 +120,11 @@ class GameOfLife extends Component {
           neighbors.push(not_commited[row+1][col-1]);
         }
         if (not_commited[row][col].is_alive(neighbors) &&
-           (not_commited[row][col].is_loneliness(neighbors) ||
-            not_commited[row][col].is_overpopulation(neighbors))) {
+           (Cellule.is_loneliness(neighbors) ||
+            Cellule.is_overpopulation(neighbors))) {
 
           this.cellules[row][col].set_dead();
-        } else if (not_commited[row][col].revive(neighbors)) {
+        } else if (Cellule.revive(neighbors)) {
           this.cellules[row][col].set_alive();
         }
       }
