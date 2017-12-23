@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameCelluleComponent implements OnInit {
 
+  celluleClass: string;
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  toggleState() {
+    this.celluleClass = 'black';
+  }
 }
