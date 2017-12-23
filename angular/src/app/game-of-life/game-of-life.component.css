@@ -1,0 +1,7 @@
+
+.game-of-life {
+  background-color: aliceblue;
+  height: 400px;
+  width: 100%;
+  overflow: hidden;
+}

@@ -1,0 +1,20 @@
+div {
+  height: 130px;
+  padding: 20px;
+  color: aliceblue;
+}
+
+h1 {
+  font-size:24px
+}
+
+img {
+  animation: App-logo-scale infinite 4s linear;
+  height: 80px;
+  width: 80px;
+}
+
+@keyframes App-logo-scale {
+  from { transform: scale(0.8); }
+  to { transform: scale(1.2); }
+}
