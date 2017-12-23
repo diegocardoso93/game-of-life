@@ -4,7 +4,9 @@ const GameFooter = () =>
   <footer className="App-footer">
     <strong className="Footer-text">
       Game of Life - a react experiment &nbsp;
-      <a href="https://github.com/diegocardoso93/game-of-life" target="_blank">source</a>
+      <a href="https://github.com/diegocardoso93/game-of-life"
+         target="_blank"
+         rel="noopener noreferrer">source</a>
     </strong>
   </footer>;
 

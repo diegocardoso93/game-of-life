@@ -9,28 +9,27 @@ class Cellule extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { bgColor: 'white' };
+    this.state = { bgColor: 'white', lifeState: LifeState.Dead };
+    this.temp_state = { bgColor: 'white', lifeState: LifeState.Dead };
     this.toggleState = this.toggleState.bind(this);
   }
 
-  life_state;
-
-  set_alive() {
-    this.life_state = LifeState.Live;
-  }
-
-  set_dead() {
-    this.life_state = LifeState.Dead;
-  }
-
   is_alive() {
-    return this.life_state === LifeState.Live;
+    return this.state.lifeState === LifeState.Live;
+  }
+
+  temp_is_alive() {
+    return this.temp_state.lifeState === LifeState.Live;
+  }
+
+  update_temp_state() {
+    this.temp_state.lifeState = this.state.lifeState;
   }
 
   static count_live_neighbor(neighbors) {
     let count_live = 0;
     for (let neighbor of neighbors) {
-      if (neighbor.is_alive()) {
+      if (neighbor.temp_is_alive()) {
         count_live++;
       }
     }
@@ -38,15 +37,15 @@ class Cellule extends Component {
   }
 
   static is_loneliness(neighbors) {
-    return Cellule.count_live_neighbor(neighbors)<2;
+    return Cellule.count_live_neighbor(neighbors) < 2;
   }
 
   static is_overpopulation(neighbors) {
-    return Cellule.count_live_neighbor(neighbors)>3;
+    return Cellule.count_live_neighbor(neighbors) > 3;
   }
 
   static revive(neighbors) {
-    return Cellule.count_live_neighbor(neighbors)===3;
+    return Cellule.count_live_neighbor(neighbors) === 3;
   }
 
   changeState(life_state) {
@@ -56,9 +55,10 @@ class Cellule extends Component {
     } else {
       bgColor = 'white';
     }
-    this.setState(prevState => ({
-      bgColor: bgColor
-    }));
+    this.setState({
+      bgColor: bgColor,
+      lifeState: life_state
+    });
   }
 
   toggleState() {
@@ -79,62 +79,65 @@ class Cellule extends Component {
 
 class GameOfLife extends Component {
 
-  cellules;
-  size;
+  cellulesWidth;
+  cellulesHeight;
   cellulesRef;
 
   constructor(props) {
     super(props);
-    this.cellules = Array.from(new Array(props.size),(v,i) => Array.from(new Array(props.size),(val,index) => new Cellule(LifeState.Dead)));
-    this.size = props.size;
-    this.cellulesRef = Array.from(new Array(props.size),(v,i) => Array.from(new Array(props.size),(val,index) => 0));
+    this.cellulesWidth = props.cellulesWidth;
+    this.cellulesHeight = props.cellulesHeight;
+    this.cellulesRef = Array.from(new Array(this.cellulesHeight),(v,i) => Array.from(new Array(this.cellulesWidth),(val,index) => 0));
   }
 
   random_mutate() {
-    for (let x=0;x<this.size;x++) {
-      for (let y=0;y<this.size;y++) {
-        this.cellules[x][y].life_state = Math.round(Math.random());
+    this.fill_cellules('random');
+  }
+
+  trigger_reset() {
+    this.fill_cellules(LifeState.Dead);
+  }
+
+  fill_cellules(generator) {
+    for (let x=0;x<this.cellulesHeight;x++) {
+      for (let y=0;y<this.cellulesWidth;y++) {
+        this.cellulesRef[x][y].changeState(generator === 'random' ? Math.round(Math.random()) : generator);
       }
     }
   }
 
   commute() {
-    let not_commited = this.cellules.slice();
-    for (let row=0;row<this.size;row++) {
-      for (let col=0;col<this.size;col++) {
-        let neighbors = [];
-        if (row>0 && col>0) {
-          neighbors.push(not_commited[row-1][col-1]);
-          neighbors.push(not_commited[row][col-1]);
-          neighbors.push(not_commited[row-1][col]);
-        }
-        if (row<this.size-1 && col<this.size-1) {
-          neighbors.push(not_commited[row+1][col+1]);
-          neighbors.push(not_commited[row][col+1]);
-          neighbors.push(not_commited[row+1][col]);
-        }
-        if (row>0 && col<this.size-1) {
-          neighbors.push(not_commited[row-1][col+1]);
-        }
-        if (row>this.size-1 && col>0) {
-          neighbors.push(not_commited[row+1][col-1]);
-        }
-        if (not_commited[row][col].is_alive(neighbors) &&
-           (Cellule.is_loneliness(neighbors) ||
-            Cellule.is_overpopulation(neighbors))) {
-
-          this.cellules[row][col].set_dead();
-        } else if (Cellule.revive(neighbors)) {
-          this.cellules[row][col].set_alive();
-        }
+    for (let row=0;row<this.cellulesHeight;row++) {
+      for (let col=0;col<this.cellulesWidth;col++) {
+        this.cellulesRef[row][col].update_temp_state();
       }
     }
-  }
-
-  updateChildCellules() {
-    for (let row=0;row<this.size;row++) {
-      for (let col=0;col<this.size;col++) {
-        this.cellulesRef[row][col].changeState(this.cellules[row][col].life_state);
+    for (let row=0;row<this.cellulesHeight;row++) {
+      for (let col=0;col<this.cellulesWidth;col++) {
+        let neighbors = [];
+        if (row>0 && col>0) {
+          neighbors.push(this.cellulesRef[row-1][col-1]);
+          neighbors.push(this.cellulesRef[row][col-1]);
+          neighbors.push(this.cellulesRef[row-1][col]);
+        }
+        if (row<this.cellulesHeight-1 && col<this.cellulesWidth-1) {
+          neighbors.push(this.cellulesRef[row+1][col+1]);
+          neighbors.push(this.cellulesRef[row][col+1]);
+          neighbors.push(this.cellulesRef[row+1][col]);
+        }
+        if (row>0 && col<this.cellulesWidth-1) {
+          neighbors.push(this.cellulesRef[row-1][col+1]);
+        }
+        if (row<this.cellulesHeight-1 && col>0) {
+          neighbors.push(this.cellulesRef[row+1][col-1]);
+        }
+        if (this.cellulesRef[row][col].is_alive()) {
+          if (Cellule.is_loneliness(neighbors) || Cellule.is_overpopulation(neighbors)) {
+            this.cellulesRef[row][col].changeState(LifeState.Dead);
+          }
+        } else if (Cellule.revive(neighbors)) {
+          this.cellulesRef[row][col].changeState(LifeState.Live);
+        }
       }
     }
   }
@@ -142,27 +145,34 @@ class GameOfLife extends Component {
   play() {
     this.updateRate = setInterval(() => {
       this.commute();
-      this.updateChildCellules();
-    }, 500);
+    }, 50);
   }
 
-  componentDidMount() {
-    this.random_mutate();
-    this.updateChildCellules();
-    this.play();
+  stop() {
+    clearInterval(this.updateRate);
   }
 
   componentWillUnmount() {
-    clearInterval(this.updateRate);
+    this.stop();
+  }
+
+  componentWillUpdate(nextProps) {
+    switch (nextProps.gameState) {
+      case 'random': this.random_mutate(); break;
+      case 'start' : this.play(); break;
+      case 'stop'  : this.stop(); break;
+      case 'reset' : this.trigger_reset(); break;
+      default:
+    }
   }
 
   render() {
     return (
-      <div>
+      <div className="Game-of-life">
         {
-          this.cellules.map((cellVec, i) => {
+          this.cellulesRef.map((cellVec, i) => {
             return cellVec.map((cell, j) => {
-              return (<Cellule key={i+j} ref={cellule => this.cellulesRef[i][j] = cellule} />)
+              return (<Cellule key={i+"_"+j} ref={cellule => this.cellulesRef[i][j] = cellule} />)
             })
           })
         }
