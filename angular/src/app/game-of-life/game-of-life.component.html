@@ -1,7 +1,7 @@
 <div ngClass="game-of-life">
   <div *ngFor="let cellGeneratorVec of cellulesGenerator">
     <div *ngFor="let cellule of cellGeneratorVec">
-      <app-game-cellule #cellulesRef></app-game-cellule>
+      <app-game-cellule #cellulesRef (click)="callClick($event)"></app-game-cellule>
     </div>
   </div>
 </div>

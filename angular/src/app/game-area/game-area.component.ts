@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {GameOfLifeComponent} from "../game-of-life/game-of-life.component";
 
 @Component({
   selector: 'app-game-area',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameAreaComponent implements OnInit {
 
+  @ViewChild(GameOfLifeComponent) gameOfLife: GameOfLifeComponent;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  gameButtonClicked(msg) {
+    this.gameOfLife.triggerState(msg);
   }
 
 }

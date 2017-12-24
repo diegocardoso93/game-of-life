@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component, EventEmitter,
+  OnInit, Output
+} from '@angular/core';
 
 @Component({
   selector: 'app-game-buttons',
@@ -7,9 +10,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameButtonsComponent implements OnInit {
 
+  @Output() triggerClick: EventEmitter<Event> = new EventEmitter();
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  clickHandler(origin) {
+    this.triggerClick.emit(origin);
   }
 
 }
