@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component, Input, OnDestroy, OnInit, QueryList,
   ViewChildren
 } from '@angular/core';
@@ -10,15 +11,16 @@ import {LifeState} from "../life-state.enum";
   templateUrl: './game-of-life.component.html',
   styleUrls: ['./game-of-life.component.css']
 })
-export class GameOfLifeComponent implements OnInit, OnDestroy {
+export class GameOfLifeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() cellulesWidth : number;
   @Input() cellulesHeight: number;
 
-  @ViewChildren('cellulesRef') cellulesRef: QueryList<any>;
+  @ViewChildren(GameCelluleComponent) cellulesRef: QueryList<GameCelluleComponent>;
 
   cellulesGenerator: Array<Array<GameCelluleComponent>>;
   updateRate: any;
+  cellulesArray: Array<Array<GameCelluleComponent>>;
 
   constructor() { }
 
@@ -33,7 +35,7 @@ export class GameOfLifeComponent implements OnInit, OnDestroy {
   fill_cellules(generator): void {
     for (let x=0;x<this.cellulesHeight;x++) {
       for (let y=0;y<this.cellulesWidth;y++) {
-        this.cellulesRef[x][y].changeState(generator === 'random' ? Math.round(Math.random()) : generator);
+        this.cellulesArray[x][y].changeState(generator === 'random' ? Math.round(Math.random()) : generator);
       }
     }
   }
@@ -41,34 +43,34 @@ export class GameOfLifeComponent implements OnInit, OnDestroy {
   commute(): void {
     for (let row=0;row<this.cellulesHeight;row++) {
       for (let col=0;col<this.cellulesWidth;col++) {
-        this.cellulesRef[row][col].update_temp_state();
+        this.cellulesArray[row][col].update_temp_state();
       }
     }
     for (let row=0;row<this.cellulesHeight;row++) {
       for (let col=0;col<this.cellulesWidth;col++) {
         let neighbors = [];
         if (row>0 && col>0) {
-          neighbors.push(this.cellulesRef[row-1][col-1]);
-          neighbors.push(this.cellulesRef[row][col-1]);
-          neighbors.push(this.cellulesRef[row-1][col]);
+          neighbors.push(this.cellulesArray[row-1][col-1]);
+          neighbors.push(this.cellulesArray[row][col-1]);
+          neighbors.push(this.cellulesArray[row-1][col]);
         }
         if (row<this.cellulesHeight-1 && col<this.cellulesWidth-1) {
-          neighbors.push(this.cellulesRef[row+1][col+1]);
-          neighbors.push(this.cellulesRef[row][col+1]);
-          neighbors.push(this.cellulesRef[row+1][col]);
+          neighbors.push(this.cellulesArray[row+1][col+1]);
+          neighbors.push(this.cellulesArray[row][col+1]);
+          neighbors.push(this.cellulesArray[row+1][col]);
         }
         if (row>0 && col<this.cellulesWidth-1) {
-          neighbors.push(this.cellulesRef[row-1][col+1]);
+          neighbors.push(this.cellulesArray[row-1][col+1]);
         }
         if (row<this.cellulesHeight-1 && col>0) {
-          neighbors.push(this.cellulesRef[row+1][col-1]);
+          neighbors.push(this.cellulesArray[row+1][col-1]);
         }
-        if (this.cellulesRef[row][col].is_alive()) {
+        if (this.cellulesArray[row][col].is_alive()) {
           if (GameCelluleComponent.is_loneliness(neighbors) || GameCelluleComponent.is_overpopulation(neighbors)) {
-            this.cellulesRef[row][col].changeState(LifeState.Dead);
+            this.cellulesArray[row][col].changeState(LifeState.Dead);
           }
         } else if (GameCelluleComponent.revive(neighbors)) {
-          this.cellulesRef[row][col].changeState(LifeState.Live);
+          this.cellulesArray[row][col].changeState(LifeState.Live);
         }
       }
     }
@@ -96,14 +98,21 @@ export class GameOfLifeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.cellulesGenerator = Array.from(new Array(this.cellulesHeight),(v,i) => Array.from(new Array(this.cellulesWidth),(val,index) => null));
-    console.log(this.cellulesRef)
+    this.cellulesArray = Array.from(new Array(this.cellulesHeight),(v,i) => Array.from(new Array(this.cellulesWidth),(val,index) => null));
+  }
+
+  ngAfterViewInit() {
+    this.mapCellulesToArray();
+  }
+
+  mapCellulesToArray() {
+    this.cellulesRef.toArray().forEach((item) => {
+      this.cellulesArray[item['row']][item['col']] = item;
+    })
   }
 
   ngOnDestroy() {
     this.stop();
   }
 
-  callClick(e) {
-    alert(e)
-  }
 }

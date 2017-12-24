@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LifeState} from "../life-state.enum";
 
 @Component({
@@ -7,6 +7,9 @@ import {LifeState} from "../life-state.enum";
   styleUrls: ['./game-cellule.component.css']
 })
 export class GameCelluleComponent implements OnInit {
+
+  @Input() row;
+  @Input() col;
 
   celluleColor: string;
   life_state: LifeState;
