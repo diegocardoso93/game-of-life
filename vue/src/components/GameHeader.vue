@@ -1,7 +1,7 @@
 <template>
-  <div>
-    {{ title }}
-    <br/>header works
+  <div class="App-header">
+    <img src="favicon.ico" class="App-logo" alt="logo" />
+    <h1 className="App-title">{{ title }}</h1>
   </div>
 </template>
 
@@ -16,7 +16,28 @@ export default {
 }
 </script>
 
-
 <style scoped>
+
+.App-logo {
+  animation: App-logo-scale infinite 4s linear;
+  height: 80px;
+  width: 80px;
+}
+
+.App-header {
+  background-color: #000;
+  height: 130px;
+  padding: 20px;
+  color: aliceblue;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+@keyframes App-logo-scale {
+  from { transform: scale(0.8); }
+  to { transform: scale(1.2); }
+}
 
 </style>
