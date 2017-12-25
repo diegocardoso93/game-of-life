@@ -1,6 +1,7 @@
 <template>
   <section class="Game-area">
-    header works
+    <GameOfLife :cellulesWidth="50" :cellulesHeight="40"></GameOfLife>
+    <GameButtons :clickAction="changeGameState"></GameButtons>
   </section>
 </template>
 
@@ -13,6 +14,11 @@ export default {
   components: {
     GameOfLife,
     GameButtons
+  },
+  methods: {
+    changeGameState(gameState) {
+      this.$emit('gameStateUpdated', gameState);
+    }
   }
 }
 </script>

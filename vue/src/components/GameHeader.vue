@@ -1,7 +1,7 @@
 <template>
   <div class="App-header">
     <img src="favicon.ico" class="App-logo" alt="logo" />
-    <h1 className="App-title">{{ title }}</h1>
+    <h1 class="App-title">{{ title }}</h1>
   </div>
 </template>
 
@@ -32,7 +32,7 @@ export default {
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 24px;
 }
 
 @keyframes App-logo-scale {
