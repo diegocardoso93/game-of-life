@@ -8398,9 +8398,19 @@ var _user$project$GameOfLife$update = F2(
 					A2(_elm_lang$core$Debug$log, 'Step', model),
 					{ctor: '[]'});
 			default:
+				var updateCellule = F2(
+					function (celluleId, cellule) {
+						return _elm_lang$core$Native_Utils.eq(celluleId, _p2._0) ? _elm_lang$core$Native_Utils.update(
+							cellule,
+							{alive: true}) : cellule;
+					});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					A2(_elm_lang$core$Debug$log, 'ToggleCellule', model),
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cellules: A2(_elm_lang$core$List$indexedMap, updateCellule, model.cellules)
+						}),
 					{ctor: '[]'});
 		}
 	});
@@ -8419,29 +8429,67 @@ var _user$project$GameOfLife$Cellule = F2(
 	function (a, b) {
 		return {alive: a, dead: b};
 	});
-var _user$project$GameOfLife$ToggleCellule = {ctor: 'ToggleCellule'};
-var _user$project$GameOfLife$viewGameCellule = function (htmlCellule) {
+var _user$project$GameOfLife$ToggleCellule = function (a) {
+	return {ctor: 'ToggleCellule', _0: a};
+};
+var _user$project$GameOfLife$viewGameCellule = F2(
+	function (id, htmlCellule) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'game-cellule', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'cellule-alive', _1: htmlCellule.alive},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'cellule-dead', _1: htmlCellule.dead},
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$GameOfLife$ToggleCellule(id)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$GameOfLife$viewGameOfLife = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('game-cellule'),
+			_0: _elm_lang$html$Html_Attributes$class('game-of-life'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				A2(_elm_lang$core$List$indexedMap, _user$project$GameOfLife$viewGameCellule, model.cellules)),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_user$project$GameOfLife$ToggleCellule),
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(model.cellules)),
+						_1: {ctor: '[]'}
+					}),
 				_1: {ctor: '[]'}
 			}
-		},
-		{ctor: '[]'});
+		});
 };
-var _user$project$GameOfLife$viewGameOfLife = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('game-of-life'),
-		_1: {ctor: '[]'}
-	},
-	A2(_elm_lang$core$List$map, _user$project$GameOfLife$viewGameCellule, _user$project$GameOfLife$initModel.cellules));
 var _user$project$GameOfLife$Stop = {ctor: 'Stop'};
 var _user$project$GameOfLife$Reset = {ctor: 'Reset'};
 var _user$project$GameOfLife$Step = {ctor: 'Step'};
@@ -8502,7 +8550,7 @@ var _user$project$GameOfLife$view = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: _user$project$GameOfLife$viewGameOfLife,
+						_0: _user$project$GameOfLife$viewGameOfLife(model),
 						_1: {
 							ctor: '::',
 							_0: _user$project$GameOfLife$viewGameButtons,

@@ -5,7 +5,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Debug exposing (log)
 import List exposing (repeat, map)
-import VirtualDom exposing (Node)
 
 
 main : Program Never Model Msg
@@ -47,6 +46,7 @@ initCellule =
     , dead = True
     }
 
+type alias ID = Int
 
 -- UPDATE
 
@@ -58,7 +58,7 @@ type Msg
     | Step
     | Reset
     | Stop
-    | ToggleCellule
+    | ToggleCellule Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -88,9 +88,16 @@ update msg model =
             Debug.log "Step"
                 model ! []
 
-        ToggleCellule ->
-            Debug.log "ToggleCellule"
-                model ! []
+        ToggleCellule id ->
+            let
+                updateCellule celluleId cellule =
+                    if celluleId == id then
+                        { cellule | alive = True }
+                    else
+                        cellule
+            in
+                { model | cellules = List.indexedMap updateCellule model.cellules }
+                    ! []
 
 
 -- VIEW
@@ -103,23 +110,34 @@ view model =
         [ appHeader
         , section
             [ class "game-area" ]
-            [ viewGameOfLife
+            [ viewGameOfLife model
             , viewGameButtons
             ]
         , appFooter
         ]
 
-viewGameOfLife : Html Msg
-viewGameOfLife =
+viewGameOfLife : Model -> Html Msg
+viewGameOfLife model =
     div
         [ class "game-of-life" ]
-        ( List.map viewGameCellule initModel.cellules )
+        [
+            div []
+                ( List.indexedMap viewGameCellule model.cellules )
+            ,
+            div []
+                [ text (toString (model.cellules)) ]
+        ]
 
-viewGameCellule : Cellule -> VirtualDom.Node Msg
-viewGameCellule htmlCellule =
+viewGameCellule : ID -> Cellule -> Html Msg
+viewGameCellule id htmlCellule =
     div
-        [ class "game-cellule"
-        , onClick ToggleCellule ]
+        [ classList [
+            ("game-cellule", True),
+            ("cellule-alive", htmlCellule.alive),
+            ("cellule-dead", htmlCellule.dead)
+        ]
+        , onClick (ToggleCellule id)
+        ]
         []
 
 viewGameButtons : Html Msg
